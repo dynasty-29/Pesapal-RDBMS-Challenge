@@ -11,21 +11,41 @@ def get_client():
 
 @appointments_bp.route('/appointments', methods=['GET'])
 def get_all_appointments():
-    """Get all appointments"""
-    sql = "SELECT * FROM appointments"
-    result = get_client().execute_query(sql)
+    """Get all appointments with patient and doctor names"""
     
-    if result['success']:
-        return jsonify({
-            'success': True,
-            'appointments': result['data'].get('rows', []),
-            'count': result['data'].get('row_count', 0)
-        }), 200
-    else:
+    # Get all appointments
+    sql_appointments = "SELECT * FROM appointments"
+    result_appointments = get_client().execute_query(sql_appointments)
+    
+    if not result_appointments['success']:
         return jsonify({
             'success': False,
-            'error': result['error']
+            'error': result_appointments['error']
         }), 500
+    
+    # Get all patients
+    sql_patients = "SELECT * FROM patients"
+    result_patients = get_client().execute_query(sql_patients)
+    
+    # Get all doctors
+    sql_doctors = "SELECT * FROM doctors"
+    result_doctors = get_client().execute_query(sql_doctors)
+    
+    # Create lookup dictionaries
+    patients = {p['id']: p['name'] for p in result_patients['data'].get('rows', [])}
+    doctors = {d['id']: d['name'] for d in result_doctors['data'].get('rows', [])}
+    
+    # Enhance appointments with names
+    appointments = result_appointments['data'].get('rows', [])
+    for apt in appointments:
+        apt['patient_name'] = patients.get(apt['patient_id'], 'Unknown')
+        apt['doctor_name'] = doctors.get(apt['doctor_id'], 'Unknown')
+    
+    return jsonify({
+        'success': True,
+        'appointments': appointments,
+        'count': len(appointments)
+    }), 200
 
 @appointments_bp.route('/appointments/<int:appointment_id>', methods=['GET'])
 def get_appointment(appointment_id):
