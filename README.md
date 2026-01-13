@@ -1,4 +1,25 @@
-# Pesapal RDBMS Feature List & Architecture
+# JDEV26 Pesapal RDBMS challenge
+
+Designing and implementing a simple relational database management system. 
+
+The system should be support for declaring tables with a few column data types, CRUD operations, basic indexing and primary and unique keying and some joining. 
+
+The interface should be SQL or something similar, and it should have an interactive REPL mode.
+
+Demonstrate the use of your RDBMS by writing a trivial web app that requires CRUD to the DB.
+
+
+
+## Video Demo
+<video controls src="RDMS DEMo.mp4" title="Title"></video>
+
+To achieve this i ensured these are core features required for this RDMS
+- **Custom SQL Parser** using pyparsing
+- **File-based Storage Engine** with JSON persistence
+- **Interactive REPL** for direct SQL queries
+- **REST API** built with Flask
+- **Modern Web UI** built with React + TypeScript
+- **Healthcare Management System** as a practical demonstration
 
 ## Core Features Checklist
 1. Storage Engine
@@ -76,57 +97,32 @@
     * Input validation
 
 
-## Clean Architecture & Microservices Design
 
-                ┌─────────────────────────────────────────────────────────────┐
-                │                     PRESENTATION LAYER                       │
-                │  ┌──────────────────┐              ┌────────────────────┐  │
-                │  │   REPL Client    │              │  Web Frontend      │  │
-                │  │   (CLI Tool)     │              │  (React + TS)      │  │
-                │  └──────────────────┘              └────────────────────┘  │
-                └────────────┬─────────────────────────────────┬──────────────┘
-                            │                                 │
-                            │ SQL Commands                    │ HTTP/REST
-                            │                                 │
-                ┌────────────┴─────────────────────────────────┴──────────────┐
-                │                     APPLICATION LAYER                        │
-                │  ┌──────────────────────────────────────────────────────┐  │
-                │  │              API Gateway Service (Flask)              │  │
-                │  │  - Routes requests                                    │  │
-                │  │  - Authentication/Authorization (future)              │  │
-                │  │  - Request validation                                 │  │
-                │  └──────────────────────────────────────────────────────┘  │
-                └────────────┬─────────────────────────────────────────────────┘
-                            │
-                            │ Service Calls
-                            │
-                ┌────────────┴─────────────────────────────────────────────────┐
-                │                   DOMAIN/BUSINESS LAYER                      │
-                │  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────┐ │
-                │  │ Query Service   │  │ Schema Service  │  │ Index       │ │
-                │  │                 │  │                 │  │ Service     │ │
-                │  │ - Parse SQL     │  │ - Manage schema │  │             │ │
-                │  │ - Execute query │  │ - Validate data │  │ - Maintain  │ │
-                │  │ - Join logic    │  │ - Constraints   │  │   indexes   │ │
-                │  └─────────────────┘  └─────────────────┘  └─────────────┘ │
-                └────────────┬─────────────────────────────────────────────────┘
-                            │
-                            │ Data Operations
-                            │
-                ┌────────────┴─────────────────────────────────────────────────┐
-                │                   INFRASTRUCTURE LAYER                       │
-                │  ┌──────────────────────────────────────────────────────┐  │
-                │  │              Storage Repository                       │  │
-                │  │  - File I/O operations                               │  │
-                │  │  - JSON serialization                                │  │
-                │  │  - Data persistence                                  │  │
-                │  └──────────────────────────────────────────────────────┘  │
-                └──────────────────────────────────────────────────────────────┘
-                                            │
-                                            │ Disk Operations
-                                            ▼
-                                    ┌───────────────┐
-                                    │  File System  │
-                                    │  (JSON files) │
-                                    └───────────────┘
+#### To run it locally 
 
+### Prerequisites
+- Python 3.11 or higher
+- Node.js 18 or higher
+- npm or yarn
+
+### clone the repo
+git clone https://github.com/YOUR_USERNAME/pesapal-rdbms.git
+
+
+### Set Up the Database Engine
+        cd database
+        python3 -m venv venv
+        source venv/bin/activate  
+        pip install -e .
+
+
+### Set Up the Flask API
+        cd ../server
+        python3 -m venv venv
+        source venv/bin/activate  
+        pip install -r requirements.txt
+
+
+#### View on frontend
+        cd client
+        npm run dev

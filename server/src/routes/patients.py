@@ -90,21 +90,42 @@ def update_patient(patient_id):
             'error': 'Name is required'
         }), 400
     
-    # Build UPDATE query
-    sql = f"UPDATE patients SET name = '{data['name']}' WHERE id = {patient_id}"
+    # Update name
+    sql_name = f"UPDATE patients SET name = '{data['name']}' WHERE id = {patient_id}"
+    result = get_client().execute_query(sql_name)
     
-    result = get_client().execute_query(sql)
-    
-    if result['success']:
-        return jsonify({
-            'success': True,
-            'message': 'Patient updated successfully'
-        }), 200
-    else:
+    if not result['success']:
         return jsonify({
             'success': False,
             'error': result['error']
         }), 500
+    
+    # Update email if provided
+    if 'email' in data and data['email']:
+        sql_email = f"UPDATE patients SET email = '{data['email']}' WHERE id = {patient_id}"
+        result = get_client().execute_query(sql_email)
+        
+        if not result['success']:
+            return jsonify({
+                'success': False,
+                'error': result['error']
+            }), 500
+    
+    # Update phone if provided
+    if 'phone' in data:
+        sql_phone = f"UPDATE patients SET phone = '{data['phone']}' WHERE id = {patient_id}"
+        result = get_client().execute_query(sql_phone)
+        
+        if not result['success']:
+            return jsonify({
+                'success': False,
+                'error': result['error']
+            }), 500
+    
+    return jsonify({
+        'success': True,
+        'message': 'Patient updated successfully'
+    }), 200
 
 @patients_bp.route('/patients/<int:patient_id>', methods=['DELETE'])
 def delete_patient(patient_id):

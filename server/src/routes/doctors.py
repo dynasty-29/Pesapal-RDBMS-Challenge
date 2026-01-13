@@ -77,6 +77,43 @@ def create_doctor():
             'error': result['error']
         }), 500
 
+@doctors_bp.route('/doctors/<int:doctor_id>', methods=['PUT'])
+def update_doctor(doctor_id):
+    """Update a doctor"""
+    data = request.get_json()
+    
+    if not data.get('name'):
+        return jsonify({
+            'success': False,
+            'error': 'Name is required'
+        }), 400
+    
+    # Update name
+    sql_name = f"UPDATE doctors SET name = '{data['name']}' WHERE id = {doctor_id}"
+    result = get_client().execute_query(sql_name)
+    
+    if not result['success']:
+        return jsonify({
+            'success': False,
+            'error': result['error']
+        }), 500
+    
+    # Update specialization if provided
+    if 'specialization' in data:
+        sql_spec = f"UPDATE doctors SET specialization = '{data.get('specialization', '')}' WHERE id = {doctor_id}"
+        result = get_client().execute_query(sql_spec)
+        
+        if not result['success']:
+            return jsonify({
+                'success': False,
+                'error': result['error']
+            }), 500
+    
+    return jsonify({
+        'success': True,
+        'message': 'Doctor updated successfully'
+    }), 200
+    
 @doctors_bp.route('/doctors/<int:doctor_id>', methods=['DELETE'])
 def delete_doctor(doctor_id):
     """Delete a doctor"""

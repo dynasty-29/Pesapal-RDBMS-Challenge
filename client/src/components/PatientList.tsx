@@ -8,6 +8,7 @@ export default function PatientList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
 
   useEffect(() => {
     fetchPatients();
@@ -35,9 +36,20 @@ export default function PatientList() {
     }
   };
 
+  const handleEdit = (patient: Patient) => {
+    setEditingPatient(patient);
+    setShowForm(true);
+  };
+
   const handleFormSuccess = () => {
     setShowForm(false);
+    setEditingPatient(null);
     fetchPatients();
+  };
+
+  const handleFormCancel = () => {
+    setShowForm(false);
+    setEditingPatient(null);
   };
 
   if (loading) return <div className="loading">Loading patients...</div>;
@@ -70,12 +82,20 @@ export default function PatientList() {
               <td>{patient.email}</td>
               <td>{patient.phone || 'N/A'}</td>
               <td>
-                <button 
-                  onClick={() => handleDelete(patient.id)}
-                  className="btn-delete"
-                >
-                  Delete
-                </button>
+                <div className="action-buttons">
+                  <button 
+                    onClick={() => handleEdit(patient)}
+                    className="btn-edit"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(patient.id)}
+                    className="btn-delete"
+                  >
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           ))}
@@ -85,7 +105,8 @@ export default function PatientList() {
       {showForm && (
         <PatientForm
           onSuccess={handleFormSuccess}
-          onCancel={() => setShowForm(false)}
+          onCancel={handleFormCancel}
+          editPatient={editingPatient}
         />
       )}
     </div>

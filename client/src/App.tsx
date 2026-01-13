@@ -10,8 +10,8 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Pesapal Healthcare Management System</h1>
-        <p>Powered by Custom RDBMS</p>
+        <h1>JDEV26 Healthcare Management System</h1>
+        <p>A trivial web app to demonstrate CRUD to the DB</p>
       </header>
 
       <nav className="app-nav">

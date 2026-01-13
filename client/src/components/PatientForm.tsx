@@ -1,12 +1,14 @@
-import { useState } from 'react';
-import { createPatient } from '../services/api';
+import { useState, useEffect } from 'react';
+import { createPatient, updatePatient } from '../services/api';
+import type { Patient } from '../types/models';
 
 interface PatientFormProps {
   onSuccess: () => void;
   onCancel: () => void;
+  editPatient?: Patient | null;
 }
 
-export default function PatientForm({ onSuccess, onCancel }: PatientFormProps) {
+export default function PatientForm({ onSuccess, onCancel, editPatient }: PatientFormProps) {
   const [formData, setFormData] = useState({
     id: '',
     name: '',
@@ -16,21 +18,42 @@ export default function PatientForm({ onSuccess, onCancel }: PatientFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (editPatient) {
+      setFormData({
+        id: editPatient.id.toString(),
+        name: editPatient.name,
+        email: editPatient.email,
+        phone: editPatient.phone || ''
+      });
+    }
+  }, [editPatient]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
     try {
-      await createPatient({
-        id: parseInt(formData.id),
-        name: formData.name,
-        email: formData.email,
-        phone: formData.phone
-      });
+      if (editPatient) {
+        // Update existing patient
+        await updatePatient(editPatient.id, {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        });
+      } else {
+        // Create new patient
+        await createPatient({
+          id: parseInt(formData.id),
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone
+        });
+      }
       onSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to create patient');
+      setError(err.response?.data?.error || `Failed to ${editPatient ? 'update' : 'create'} patient`);
       setLoading(false);
     }
   };
@@ -38,19 +61,21 @@ export default function PatientForm({ onSuccess, onCancel }: PatientFormProps) {
   return (
     <div className="modal-overlay" onClick={onCancel}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h3>Add New Patient</h3>
+        <h3>{editPatient ? 'Edit Patient' : 'Add New Patient'}</h3>
         {error && <div className="form-error">{error}</div>}
         
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>ID *</label>
-            <input
-              type="number"
-              value={formData.id}
-              onChange={(e) => setFormData({...formData, id: e.target.value})}
-              required
-            />
-          </div>
+          {!editPatient && (
+            <div className="form-group">
+              <label>ID *</label>
+              <input
+                type="number"
+                value={formData.id}
+                onChange={(e) => setFormData({...formData, id: e.target.value})}
+                required
+              />
+            </div>
+          )}
 
           <div className="form-group">
             <label>Name *</label>
@@ -86,7 +111,7 @@ export default function PatientForm({ onSuccess, onCancel }: PatientFormProps) {
               Cancel
             </button>
             <button type="submit" disabled={loading} className="btn-submit">
-              {loading ? 'Creating...' : 'Create Patient'}
+              {loading ? (editPatient ? 'Updating...' : 'Creating...') : (editPatient ? 'Update Patient' : 'Create Patient')}
             </button>
           </div>
         </form>
