@@ -11,7 +11,7 @@ Demonstrate the use of your RDBMS by writing a trivial web app that requires CRU
 
 
 ## Video Demo
-<video controls src="RDMS DEMo.mp4" title="Title"></video>
+![RDMS DEMo.mp4]
 
 To achieve this i ensured these are core features required for this RDMS
 - **Custom SQL Parser** using pyparsing
